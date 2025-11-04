@@ -6,13 +6,15 @@ A lightweight, themeable React component for inline HTML editing with visual and
 
 ## Features
 
-- 🎨 **Dual Mode Editing**: Toggle between visual (WYSIWYG) and HTML source code modes
-- 🌓 **Theme Compatible**: Fully customizable background and foreground colors for dark/light mode
-- 🔗 **Clickable Links**: Ctrl/Cmd+Click to open links in new tabs while editing
-- 📝 **Rich Text Support**: Proper rendering of lists, headings, bold, italic, images, and more
-- ⚡ **No Cursor Jumping**: Smooth editing experience with stable cursor positioning
-- 🎯 **Simple API**: Easy to integrate with minimal configuration
-- 📦 **Zero Dependencies**: Pure React implementation using contentEditable
+- Toggle between visual (WYSIWYG) and HTML source code modes
+- Fully customizable background and foreground colors for dark/light mode
+- Ctrl/Cmd+Click to open links in new tabs while editing
+- Proper rendering of lists, headings, bold, italic, images and more
+- Support for subscript and superscript formatting
+- Code and pre elements with monospace font and background styling
+- Smooth typing with stable cursor positioning
+- Easy to integrate with minimal configuration
+- Pure React implementation using contentEditable
 
 ## Demo
 
@@ -38,10 +40,10 @@ npm run dev
 ### Basic Example
 
 ```jsx
-import InlineEditor from './components/InlineEditor';
+import InlineEditor from "./components/InlineEditor";
 
 function MyApp() {
-  const [content, setContent] = useState('<p>Hello World</p>');
+  const [content, setContent] = useState("<p>Hello World</p>");
 
   return (
     <InlineEditor
@@ -55,20 +57,22 @@ function MyApp() {
 ### With Theme Support
 
 ```jsx
-import InlineEditor from './components/InlineEditor';
+import InlineEditor from "./components/InlineEditor";
 
 function MyApp() {
   const [isDarkMode, setIsDarkMode] = useState(false);
-  
-  const theme = isDarkMode ? {
-    backgroundColor: '#1e1e1e',
-    foregroundColor: '#e0e0e0',
-    borderColor: '#444444'
-  } : {
-    backgroundColor: '#ffffff',
-    foregroundColor: '#000000',
-    borderColor: '#cccccc'
-  };
+
+  const theme = isDarkMode
+    ? {
+        backgroundColor: "#1e1e1e",
+        foregroundColor: "#e0e0e0",
+        borderColor: "#444444",
+      }
+    : {
+        backgroundColor: "#ffffff",
+        foregroundColor: "#000000",
+        borderColor: "#cccccc",
+      };
 
   return (
     <InlineEditor
@@ -91,7 +95,7 @@ function MyApp() {
   foregroundColor="#e8dcc8"
   borderColor="#4a3f35"
   className="my-custom-editor"
-  style={{ maxWidth: '800px', margin: '0 auto' }}
+  style={{ maxWidth: "800px", margin: "0 auto" }}
   onChange={(newContent) => {
     // Save to backend, update state, etc.
     saveContent(newContent);
@@ -101,47 +105,52 @@ function MyApp() {
 
 ## Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `initialContent` | string | `'<p>Start typing here...</p>'` | Initial HTML content to display |
-| `backgroundColor` | string | `'#ffffff'` | Background color of the editor |
-| `foregroundColor` | string | `'#000000'` | Text color |
-| `borderColor` | string | `'#cccccc'` | Border color |
-| `className` | string | `''` | Additional CSS class for the container |
-| `style` | object | `{}` | Additional inline styles for the container |
-| `onChange` | function | `undefined` | Callback fired when content changes: `(content: string) => void` |
+| Prop              | Type     | Default                         | Description                                                      |
+| ----------------- | -------- | ------------------------------- | ---------------------------------------------------------------- |
+| `initialContent`  | string   | `'<p>Start typing here...</p>'` | Initial HTML content to display                                  |
+| `backgroundColor` | string   | `'#ffffff'`                     | Background color of the editor                                   |
+| `foregroundColor` | string   | `'#000000'`                     | Text color                                                       |
+| `borderColor`     | string   | `'#cccccc'`                     | Border color                                                     |
+| `className`       | string   | `''`                            | Additional CSS class for the container                           |
+| `style`           | object   | `{}`                            | Additional inline styles for the container                       |
+| `onChange`        | function | `undefined`                     | Callback fired when content changes: `(content: string) => void` |
 
 ## Features in Detail
 
 ### Visual Mode
+
 - Type naturally with rendered HTML
 - Click to position cursor
-- Cmd/Ctrl+Click links to open in new tab
+- `Cmd/Ctrl`+`Click` links to open in new tab
 - Proper rendering of:
   - Headings (h1-h3)
-  - Lists (ul, ol)
+  - Unordered and ordered lists (ul, ol)
   - Bold, italic text
   - Links with underline styling
   - Images (responsive, max-width: 100%)
+  - Subscript and superscript
+  - Inline code and code blocks with monospace font
   - Paragraphs with spacing
 
 ### HTML Mode
+
 - Edit raw HTML source code
 - Monospace font for better readability
 - Syntax-friendly textarea
 - Switch back to see rendered result
 
 ### Keyboard Shortcuts
-- **Cmd/Ctrl + Click**: Open links in new tab (visual mode)
+
+- Use `Cmd/Ctrl` & `Click` Open links in new tab (visual mode)
 - Switch modes using the toolbar button
 
 ## Styling
 
 The editor applies default styling to HTML elements. You can customize the appearance by:
 
-1. **Using props**: `backgroundColor`, `foregroundColor`, `borderColor`
-2. **Custom className**: Add your own CSS class
-3. **Inline styles**: Pass additional styles via `style` prop
+1. Using props: `backgroundColor`, `foregroundColor`, `borderColor`
+2. Custom className: Add your own CSS class
+3. Inline styles: Pass additional styles via `style` prop
 
 ### Example Custom Styles
 
@@ -167,6 +176,7 @@ The editor applies default styling to HTML elements. You can customize the appea
 ### How It Works
 
 The component uses React's `contentEditable` attribute for visual editing mode:
+
 - Initial content is set once on mount via `useEffect`
 - Content is not controlled after mount to prevent cursor jumping
 - Mode switching manually updates the DOM
@@ -175,6 +185,7 @@ The component uses React's `contentEditable` attribute for visual editing mode:
 ### Why No Cursor Jumping?
 
 Unlike many contentEditable implementations, this component:
+
 - Avoids unnecessary re-renders during typing
 - Only updates innerHTML when switching modes
 - Uses refs instead of state for the visual editor content
@@ -183,37 +194,37 @@ Unlike many contentEditable implementations, this component:
 ## Example: Integration with Backend
 
 ```jsx
-import { useState, useEffect } from 'react';
-import InlineEditor from './components/InlineEditor';
+import { useState, useEffect } from "react";
+import InlineEditor from "./components/InlineEditor";
 
 function DocumentEditor({ documentId }) {
-  const [content, setContent] = useState('');
-  const [theme, setTheme] = useState('light');
+  const [content, setContent] = useState("");
+  const [theme, setTheme] = useState("light");
 
   useEffect(() => {
     // Load initial content from API
     fetch(`/api/documents/${documentId}`)
-      .then(res => res.json())
-      .then(data => setContent(data.content));
+      .then((res) => res.json())
+      .then((data) => setContent(data.content));
   }, [documentId]);
 
   const handleSave = async (newContent) => {
     setContent(newContent);
-    
+
     // Debounced save to backend
     await fetch(`/api/documents/${documentId}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content: newContent })
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content: newContent }),
     });
   };
 
   return (
     <InlineEditor
       initialContent={content}
-      backgroundColor={theme === 'dark' ? '#1e1e1e' : '#ffffff'}
-      foregroundColor={theme === 'dark' ? '#e0e0e0' : '#000000'}
-      borderColor={theme === 'dark' ? '#444444' : '#cccccc'}
+      backgroundColor={theme === "dark" ? "#1e1e1e" : "#ffffff"}
+      foregroundColor={theme === "dark" ? "#e0e0e0" : "#000000"}
+      borderColor={theme === "dark" ? "#444444" : "#cccccc"}
       onChange={handleSave}
     />
   );
@@ -242,16 +253,15 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 MIT License - feel free to use this in your projects!
 
-## Author
-
-Created for easy inline HTML editing with theme support.
-
 ## Changelog
 
 ### Version 1.0.0
+
 - Initial release
 - Visual and HTML editing modes
 - Theme customization
-- Clickable links
-- Proper HTML element styling
+- Clickable links with Cmd/Ctrl+Click
+- Proper HTML element styling (headings, lists, bold, italic, images)
+- Subscript and superscript support
+- Code and pre element styling with monospace font
 - No cursor jumping issues

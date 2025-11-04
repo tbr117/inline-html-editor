@@ -183,6 +183,25 @@ const InlineEditor = ({
             vertical-align: super;
             font-size: smaller;
           }
+          .editor-content code {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: rgba(128, 128, 128, 0.1);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.9em;
+          }
+          .editor-content pre {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: rgba(128, 128, 128, 0.1);
+            padding: 12px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin: 1em 0;
+          }
+          .editor-content pre code {
+            background-color: transparent;
+            padding: 0;
+          }
           .editor-content a {
             color: #0066cc;
             text-decoration: underline;
