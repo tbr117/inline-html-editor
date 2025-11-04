@@ -49,6 +49,10 @@ function MyApp() {
     <InlineEditor
       initialContent={content}
       onChange={(newContent) => setContent(newContent)}
+      onBlur={(newContent) => {
+        // Save to database when user clicks away (works in both modes)
+        saveToDatabase(newContent);
+      }}
     />
   );
 }
@@ -113,7 +117,8 @@ function MyApp() {
 | `borderColor`     | string   | `'#cccccc'`                     | Border color                                                     |
 | `className`       | string   | `''`                            | Additional CSS class for the container                           |
 | `style`           | object   | `{}`                            | Additional inline styles for the container                       |
-| `onChange`        | function | `undefined`                     | Callback fired when content changes: `(content: string) => void` |
+| `onChange`        | function | `undefined`                     | Callback fired when content changes in HTML mode: `(content: string) => void` |
+| `onBlur`          | function | `undefined`                     | Callback fired when editor loses focus (both visual and HTML modes): `(content: string) => void` |
 
 ## Features in Detail
 
@@ -191,41 +196,28 @@ Unlike many contentEditable implementations, this component:
 - Uses refs instead of state for the visual editor content
 - No event handlers that trigger React updates while typing
 
-## Example: Integration with Backend
+## Example: Capturing Content Changes
 
 ```jsx
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import InlineEditor from "./components/InlineEditor";
 
-function DocumentEditor({ documentId }) {
-  const [content, setContent] = useState("");
-  const [theme, setTheme] = useState("light");
-
-  useEffect(() => {
-    // Load initial content from API
-    fetch(`/api/documents/${documentId}`)
-      .then((res) => res.json())
-      .then((data) => setContent(data.content));
-  }, [documentId]);
-
-  const handleSave = async (newContent) => {
-    setContent(newContent);
-
-    // Debounced save to backend
-    await fetch(`/api/documents/${documentId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ content: newContent }),
-    });
-  };
+function DocumentEditor() {
+  const [content, setContent] = useState("<p>Start typing...</p>");
 
   return (
     <InlineEditor
       initialContent={content}
-      backgroundColor={theme === "dark" ? "#1e1e1e" : "#ffffff"}
-      foregroundColor={theme === "dark" ? "#e0e0e0" : "#000000"}
-      borderColor={theme === "dark" ? "#444444" : "#cccccc"}
-      onChange={handleSave}
+      onChange={(newContent) => {
+        // Fires when editing HTML source
+        setContent(newContent);
+        console.log("HTML mode change:", newContent);
+      }}
+      onBlur={(newContent) => {
+        // Fires when user clicks away from visual or HTML editor
+        setContent(newContent);
+        console.log("Visual mode blur:", newContent);
+      }}
     />
   );
 }

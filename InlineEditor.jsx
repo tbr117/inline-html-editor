@@ -7,7 +7,8 @@ const InlineEditor = ({
   borderColor = '#cccccc',
   className = '',
   style = {},
-  onChange
+  onChange,
+  onBlur
 }) => {
   const [isHtmlMode, setIsHtmlMode] = useState(false);
   const [htmlSource, setHtmlSource] = useState(initialContent);
@@ -31,6 +32,18 @@ const InlineEditor = ({
     setHtmlSource(e.target.value);
     if (onChange) {
       onChange(e.target.value);
+    }
+  };
+
+  const handleHtmlBlur = () => {
+    if (onBlur) {
+      onBlur(htmlSource);
+    }
+  };
+
+  const handleBlur = () => {
+    if (editorRef.current && onBlur) {
+      onBlur(editorRef.current.innerHTML);
     }
   };
 
@@ -232,6 +245,7 @@ const InlineEditor = ({
         <textarea
           value={htmlSource}
           onChange={handleHtmlChange}
+          onBlur={handleHtmlBlur}
           style={textareaStyles}
           spellCheck="false"
           placeholder="Enter HTML here..."
@@ -241,6 +255,7 @@ const InlineEditor = ({
           ref={editorRef}
           contentEditable
           onClick={handleClick}
+          onBlur={handleBlur}
           style={contentAreaStyles}
           suppressContentEditableWarning
           className="editor-content"

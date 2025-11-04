@@ -121,7 +121,11 @@ const App = () => {
           backgroundColor={currentTheme.backgroundColor}
           foregroundColor={currentTheme.foregroundColor}
           borderColor={currentTheme.borderColor}
-          onChange={(newContent) => setContent(newContent)}
+          onChange={(newContent) => setContent(newContent)} // live update rich text content
+          onBlur={(content) => {
+            console.log("User finished editing:", content);
+            // This is where you'd save to your database
+          }}
         />
       </div>
     </div>
