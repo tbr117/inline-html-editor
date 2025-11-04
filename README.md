@@ -18,7 +18,7 @@ A lightweight, themeable React component for inline HTML editing with visual and
 
 ## Demo
 
-![Demo Screenshot](https://via.placeholder.com/800x400?text=Inline+Editor+Demo)
+![Demo Screenshot](./images/sample.png)
 
 ## Installation
 
