@@ -175,6 +175,14 @@ const InlineEditor = ({
           .editor-content em {
             font-style: italic;
           }
+          .editor-content sub {
+            vertical-align: sub;
+            font-size: smaller;
+          }
+          .editor-content sup {
+            vertical-align: super;
+            font-size: smaller;
+          }
           .editor-content a {
             color: #0066cc;
             text-decoration: underline;
