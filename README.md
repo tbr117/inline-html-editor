@@ -24,7 +24,7 @@ A lightweight, themeable React component for inline HTML editing with visual and
 
 ### Using in Your Project
 
-1. Copy `InlineEditor.jsx` to your project's components folder
+1. Copy `InlineEditor.tsx` to your project's components folder
 2. Import and use it in your React application
 
 ```bash
@@ -37,85 +37,36 @@ npm run dev
 
 ## Usage
 
-### Basic Example
+### Basic Example (TypeScript)
 
-````jsx
-import InlineEditor from "./components/InlineEditor";
+```tsx
+import { useState } from 'react';
+import InlineEditor from './components/InlineEditor';
 
-function MyApp() {
-  const [content, setContent] = useState("<p>Hello World</p>");
+function MyApp(): JSX.Element {
+  const [content, setContent] = useState<string>('<p>Hello World</p>');
 
   return (
     <InlineEditor
-       # Inline HTML Editor
+      initialContent={content}
+      onChange={(newContent) => setContent(newContent)}
+      onBlur={(newContent) => {
+        // Save to database when user clicks away (works in both modes)
+        saveToDatabase(newContent);
+      }}
+    />
+  );
+}
+```
 
-      A lightweight, themeable React component for inline HTML editing with visual and code modes. Perfect for applications that need night mode support and simple content editing.
+      ### With Theme Support (TypeScript)
 
-      ![License](https://img.shields.io/badge/license-MIT-blue.svg)
-
-      ## Features
-
-      - Toggle between visual (WYSIWYG) and HTML source code modes
-      - Fully customizable background and foreground colors for dark/light mode
-      - Ctrl/Cmd+Click to open links in new tabs while editing
-      - Proper rendering of lists, headings, bold, italic, images and more
-      - Support for subscript and superscript formatting
-      - Code and pre elements with monospace font and background styling
-      - Smooth typing with stable cursor positioning
-      - Easy to integrate with minimal configuration
-      - Pure React implementation using contentEditable
-
-      ## Demo
-
-      ![Demo Screenshot](./images/sample.png)
-
-      ## Installation
-
-      ### Using in Your Project
-
-      1. Copy `InlineEditor.tsx` (or `InlineEditor.jsx`) to your project's components folder
-      2. Import and use it in your React application
-
-      ```bash
-      # If you want to run the demo
-      git clone https://github.com/YOUR_USERNAME/inline-editor.git
-      cd inline-editor
-      npm install
-      npm run dev
-      ```
-
-      ## Usage
-
-      ### Basic Example
-
-      ```jsx
+      ```tsx
       import { useState } from 'react';
       import InlineEditor from './components/InlineEditor';
 
-      function MyApp() {
-        const [content, setContent] = useState('<p>Hello World</p>');
-
-        return (
-          <InlineEditor
-            initialContent={content}
-            onChange={(newContent) => setContent(newContent)}
-            onBlur={(newContent) => {
-              // Save to database when user clicks away (works in both modes)
-              saveToDatabase(newContent);
-            }}
-          />
-        );
-      }
-      ```
-
-      ### With Theme Support
-
-      ```jsx
-      import { useState } from 'react';
-      import InlineEditor from './components/InlineEditor';
-
-      function MyApp() {
-        const [isDarkMode, setIsDarkMode] = useState(false);
+      function MyApp(): JSX.Element {
+        const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
 
         const theme = isDarkMode
           ? {
@@ -141,22 +92,22 @@ function MyApp() {
       }
       ```
 
-      ### Advanced Example with Custom Styling
+### Advanced Example with Custom Styling (TypeScript)
 
-      ```jsx
-      <InlineEditor
-        initialContent="<h1>My Document</h1><p>Content here...</p>"
-        backgroundColor="#2b2520"
-        foregroundColor="#e8dcc8"
-        borderColor="#4a3f35"
-        className="my-custom-editor"
-        style={{ maxWidth: '800px', margin: '0 auto' }}
-        onChange={(newContent) => {
-          // Save to backend, update state, etc.
-          saveContent(newContent);
-        }}
-      />
-      ```
+```tsx
+<InlineEditor
+  initialContent="<h1>My Document</h1><p>Content here...</p>"
+  backgroundColor="#2b2520"
+  foregroundColor="#e8dcc8"
+  borderColor="#4a3f35"
+  className="my-custom-editor"
+  style={{ maxWidth: '800px', margin: '0 auto' }}
+  onChange={(newContent) => {
+    // Save to backend, update state, etc.
+    saveContent(newContent);
+  }}
+/>
+```
 
       ## Props
 
@@ -339,13 +290,13 @@ function MyApp() {
 
       If you want to autosave while editing, debounce `onChange` or the server call. Avoid updating React state on every input in visual mode — prefer `onChange` (HTML mode) or a periodic read via `ref`.
 
-      ```jsx
+      ```tsx
       import { useRef, useCallback } from 'react';
       import InlineEditor from './InlineEditor';
       import debounce from 'lodash/debounce';
 
       function AutoSaveEditor() {
-        const editorRef = useRef(null);
+        const editorRef = useRef<any>(null);
 
         const save = useCallback(
           debounce(() => {
@@ -365,12 +316,12 @@ function MyApp() {
 
       ## Example: Capturing Content Changes
 
-      ```jsx
+      ```tsx
       import { useState } from 'react';
       import InlineEditor from './components/InlineEditor';
 
-      function DocumentEditor() {
-        const [content, setContent] = useState('<p>Start typing...</p>');
+      function DocumentEditor(): JSX.Element {
+        const [content, setContent] = useState<string>('<p>Start typing...</p>');
 
         return (
           <InlineEditor
