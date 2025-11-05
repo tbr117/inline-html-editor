@@ -39,7 +39,7 @@ npm run dev
 
 ### Basic Example
 
-```jsx
+````jsx
 import InlineEditor from "./components/InlineEditor";
 
 function MyApp() {
@@ -155,7 +155,7 @@ function MyApp() {
           // Save to backend, update state, etc.
           saveContent(newContent);
         }}
-      /> 
+      />
       ```
 
       ## Props
@@ -343,16 +343,16 @@ function MyApp() {
 
       ## FAQ
 
-      **Q: Can I add toolbar buttons for formatting?**  
+      **Q: Can I add toolbar buttons for formatting?**
       A: The component is intentionally minimal. You can extend it by using `document.execCommand()` for basic formatting or add custom buttons that manipulate the content.
 
-      **Q: How do I get the current content programmatically?**  
+      **Q: How do I get the current content programmatically?**
       A: Use the `onChange` callback or, for programmatic reads, call the `getContent()` method on the component ref (see examples above).
 
-      **Q: Can I use this in a form?**  
+      **Q: Can I use this in a form?**
       A: Yes! Use the `ref` to read content at submit time or keep a saved copy via `onBlur`.
 
-      **Q: Does it sanitize HTML?**  
+      **Q: Does it sanitize HTML?**
       A: No. You should sanitize user input on your backend before storing/displaying it.
 
       ## Contributing
@@ -375,3 +375,4 @@ function MyApp() {
       - Subscript and superscript support
       - Code and pre element styling with monospace font
       - No cursor jumping issues
+````
