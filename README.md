@@ -113,6 +113,7 @@ function MyApp(): JSX.Element {
 
 | Prop              | Type     | Default                         | Description                                                      |
 | ----------------- | -------- | ------------------------------- | ---------------------------------------------------------------- |
+| `id`              | string   | `undefined`                     | Optional `id` attribute applied to the editor wrapper             |
 | `initialContent`  | string   | `'<p>Type here...</p>'` | Initial HTML content to display                                  |
 | `backgroundColor` | string   | `'#ffffff'`                     | Background color of the editor                                   |
 | `foregroundColor` | string   | `'#000000'`                     | Text color                                                       |
@@ -121,6 +122,9 @@ function MyApp(): JSX.Element {
 | `style`           | object   | `{}`                            | Additional inline styles for the container                       |
 | `onChange`        | function | `undefined`                     | Callback fired when content changes in HTML mode: `(content: string) => void` |
 | `onBlur`          | function | `undefined`                     | Callback fired when editor loses focus (both visual and HTML modes): `(content: string) => void` |
+| `onModeChange`    | function | `undefined`                     | Called when the editor switches between visual and HTML modes `(mode: 'visual' \| 'html') => void` |
+| `headerSlot`      | function | `undefined`                     | Render prop placed above the editor: `({ mode, toggleMode, setMode }) => ReactNode` |
+| `showInternalToggle` | boolean | `true`                        | Hide the built-in Visual/HTML toggle when you want to render your own |
 
 ## Features in Detail
 
@@ -305,6 +309,67 @@ function AutoSaveEditor() {
 
   return <InlineEditor ref={editorRef} onChange={save} onBlur={save} />;
 }
+```
+
+### Rendering the mode toggle beside a field label
+
+You can hide the built-in toggle and render your own controls anywhere in the UI by combining the `showInternalToggle`, `onModeChange`, and `InlineEditorHandle` APIs.
+
+```tsx
+import { useRef, useState } from 'react';
+import InlineEditor from './InlineEditor';
+import type { InlineEditorHandle, InlineEditorMode } from './src/types';
+
+function QuestionField() {
+  const editorRef = useRef<InlineEditorHandle | null>(null);
+  const [mode, setMode] = useState<InlineEditorMode>('visual');
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <label htmlFor="question-editor" style={{ fontWeight: 600 }}>
+          Question
+        </label>
+        <button
+          type="button"
+          onClick={() => editorRef.current?.toggleMode?.()}
+          style={{
+            padding: '4px 8px',
+            fontSize: '0.8rem',
+            borderRadius: 6,
+            border: '1px solid #cccccc',
+            backgroundColor: '#ffffff',
+            cursor: 'pointer',
+          }}
+        >
+          {mode === 'html' ? '📝 Visual' : '< > HTML'}
+        </button>
+      </div>
+
+      <InlineEditor
+        id="question-editor"
+        ref={editorRef}
+        showInternalToggle={false}
+        onModeChange={setMode}
+      />
+    </div>
+  );
+}
+```
+
+If you prefer to keep the toggle inside the editor container but use your own markup, provide a `headerSlot` render prop:
+
+```tsx
+<InlineEditor
+  showInternalToggle={false}
+  headerSlot={({ mode, toggleMode }) => (
+    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+      <button type="button" onClick={toggleMode}>
+        {mode === 'html' ? '📝 Visual' : '< > HTML'}
+      </button>
+    </div>
+  )}
+/>;
 ```
 
 ### Security: sanitize before storing or rendering

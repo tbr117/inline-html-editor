@@ -10,13 +10,19 @@ import type {
   CSSProperties,
   MouseEvent as ReactMouseEvent,
 } from 'react';
-import type { InlineEditorProps, InlineEditorHandle } from './src/types';
+import type {
+  InlineEditorProps,
+  InlineEditorHandle,
+  InlineEditorMode,
+  InlineEditorHeaderSlotProps,
+} from './src/types';
 
 const DEFAULT_CONTENT = '<p>Start typing here...</p>';
 
 const InlineEditor = forwardRef<InlineEditorHandle, InlineEditorProps>(
   (
     {
+      id,
       initialContent = DEFAULT_CONTENT,
       backgroundColor = '#ffffff',
       foregroundColor = '#000000',
@@ -25,6 +31,9 @@ const InlineEditor = forwardRef<InlineEditorHandle, InlineEditorProps>(
       style,
       onChange,
       onBlur,
+      onModeChange,
+      headerSlot,
+      showInternalToggle = true,
     },
     ref
   ) => {
@@ -51,6 +60,45 @@ const InlineEditor = forwardRef<InlineEditorHandle, InlineEditorProps>(
         ? htmlSource
         : editorRef.current?.innerHTML ?? lastEmittedContentRef.current;
 
+    const switchToVisualMode = () => {
+      setIsHtmlMode(false);
+      setTimeout(() => {
+        if (editorRef.current) {
+          editorRef.current.innerHTML = htmlSource;
+        }
+      }, 0);
+    };
+
+    const switchToHtmlMode = () => {
+      if (editorRef.current) {
+        const currentContent = editorRef.current.innerHTML;
+        setHtmlSource(currentContent);
+        lastEmittedContentRef.current = currentContent;
+      }
+      setIsHtmlMode(true);
+    };
+
+    const setEditorMode = (mode: InlineEditorMode) => {
+      if (mode === 'html') {
+        if (!isHtmlMode) {
+          switchToHtmlMode();
+        }
+        return;
+      }
+
+      if (isHtmlMode) {
+        switchToVisualMode();
+      }
+    };
+
+    const toggleMode = () => {
+      if (isHtmlMode) {
+        switchToVisualMode();
+      } else {
+        switchToHtmlMode();
+      }
+    };
+
     useImperativeHandle(
       ref,
       () => ({
@@ -62,8 +110,11 @@ const InlineEditor = forwardRef<InlineEditorHandle, InlineEditorProps>(
             editorRef.current.innerHTML = value;
           }
         },
+        toggleMode,
+        getMode: () => (isHtmlMode ? 'html' : 'visual'),
+        setMode: setEditorMode,
       }),
-      [htmlSource, isHtmlMode]
+      [getLatestInnerHtml, htmlSource, isHtmlMode]
     );
 
     const handleContentChange = () => {
@@ -96,6 +147,12 @@ const InlineEditor = forwardRef<InlineEditorHandle, InlineEditorProps>(
         onBlur(getLatestInnerHtml());
       }
     };
+
+    useEffect(() => {
+      if (onModeChange) {
+        onModeChange(isHtmlMode ? 'html' : 'visual');
+      }
+    }, [isHtmlMode, onModeChange]);
 
     const handleClick = (event: ReactMouseEvent<HTMLDivElement>) => {
       const target = event.target as HTMLElement | null;
@@ -209,7 +266,7 @@ const InlineEditor = forwardRef<InlineEditorHandle, InlineEditorProps>(
     };
 
     return (
-      <div className={`inline-editor ${className}`} style={editorStyles}>
+      <div id={id} className={`inline-editor ${className}`} style={editorStyles}>
         <style>
           {`
           .editor-content ul,
@@ -293,21 +350,31 @@ const InlineEditor = forwardRef<InlineEditorHandle, InlineEditorProps>(
           }
         `}
         </style>
-        <div style={toolbarStyles}>
-          <button
-            onClick={toggleMode}
-            style={buttonStyles}
-            onMouseEnter={(event) => {
-              event.currentTarget.style.opacity = '0.8';
-            }}
-            onMouseLeave={(event) => {
-              event.currentTarget.style.opacity = '1';
-            }}
-          >
-            {isHtmlMode ? '📝 Visual' : '< > HTML'}
-          </button>
-        </div>
-        
+        {headerSlot
+          ? headerSlot({
+              mode: isHtmlMode ? 'html' : 'visual',
+              toggleMode,
+              setMode: setEditorMode,
+            } satisfies InlineEditorHeaderSlotProps)
+          : null}
+        {showInternalToggle && (
+          <div style={toolbarStyles}>
+            <button
+              type="button"
+              onClick={toggleMode}
+              style={buttonStyles}
+              onMouseEnter={(event) => {
+                event.currentTarget.style.opacity = '0.8';
+              }}
+              onMouseLeave={(event) => {
+                event.currentTarget.style.opacity = '1';
+              }}
+            >
+              {isHtmlMode ? '📝 Visual' : '< > HTML'}
+            </button>
+          </div>
+        )}
+
         {isHtmlMode ? (
           <textarea
             value={htmlSource}
