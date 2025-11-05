@@ -4,30 +4,30 @@ import {
   useRef,
   useEffect,
   useImperativeHandle,
-} from 'react';
+} from "react";
 import type {
   ChangeEvent,
   CSSProperties,
   MouseEvent as ReactMouseEvent,
-} from 'react';
+} from "react";
 import type {
   InlineEditorProps,
   InlineEditorHandle,
   InlineEditorMode,
   InlineEditorHeaderSlotProps,
-} from './src/types';
+} from "./src/types";
 
-const DEFAULT_CONTENT = '<p>Start typing here...</p>';
+const DEFAULT_CONTENT = "<p>Start typing here...</p>";
 
 const InlineEditor = forwardRef<InlineEditorHandle, InlineEditorProps>(
   (
     {
       id,
       initialContent = DEFAULT_CONTENT,
-      backgroundColor = '#ffffff',
-      foregroundColor = '#000000',
-      borderColor = '#cccccc',
-      className = '',
+      backgroundColor = "#ffffff",
+      foregroundColor = "#000000",
+      borderColor = "#cccccc",
+      className = "",
       style,
       onChange,
       onBlur,
@@ -79,7 +79,7 @@ const InlineEditor = forwardRef<InlineEditorHandle, InlineEditorProps>(
     };
 
     const setEditorMode = (mode: InlineEditorMode) => {
-      if (mode === 'html') {
+      if (mode === "html") {
         if (!isHtmlMode) {
           switchToHtmlMode();
         }
@@ -111,7 +111,7 @@ const InlineEditor = forwardRef<InlineEditorHandle, InlineEditorProps>(
           }
         },
         toggleMode,
-        getMode: () => (isHtmlMode ? 'html' : 'visual'),
+        getMode: () => (isHtmlMode ? "html" : "visual"),
         setMode: setEditorMode,
       }),
       [getLatestInnerHtml, htmlSource, isHtmlMode]
@@ -150,7 +150,7 @@ const InlineEditor = forwardRef<InlineEditorHandle, InlineEditorProps>(
 
     useEffect(() => {
       if (onModeChange) {
-        onModeChange(isHtmlMode ? 'html' : 'visual');
+        onModeChange(isHtmlMode ? "html" : "visual");
       }
     }, [isHtmlMode, onModeChange]);
 
@@ -159,114 +159,100 @@ const InlineEditor = forwardRef<InlineEditorHandle, InlineEditorProps>(
       if (!target) {
         return;
       }
-      
+
       // If clicking on an image, check if it's inside a link
-      if (target.tagName === 'IMG') {
+      if (target.tagName === "IMG") {
         let parent = target.parentElement;
         while (parent && parent !== editorRef.current) {
           if (parent instanceof HTMLAnchorElement) {
             event.preventDefault();
-            window.open(parent.href, '_blank', 'noopener,noreferrer');
+            window.open(parent.href, "_blank", "noopener,noreferrer");
             return;
           }
           parent = parent.parentElement;
         }
       }
-      
+
       // For regular links, require Ctrl/Cmd to avoid interfering with editing
       if (
         target instanceof HTMLAnchorElement &&
         (event.ctrlKey || event.metaKey)
       ) {
         event.preventDefault();
-        window.open(target.href, '_blank', 'noopener,noreferrer');
+        window.open(target.href, "_blank", "noopener,noreferrer");
       }
     };
 
-    const toggleMode = () => {
-      if (isHtmlMode) {
-        // Switching from HTML to visual mode
-        setIsHtmlMode(false);
-        setTimeout(() => {
-          if (editorRef.current) {
-            editorRef.current.innerHTML = htmlSource;
-          }
-        }, 0);
-      } else {
-        // Switching from visual to HTML mode
-        if (editorRef.current) {
-          const currentContent = editorRef.current.innerHTML;
-          setHtmlSource(currentContent);
-          lastEmittedContentRef.current = currentContent;
-        }
-        setIsHtmlMode(true);
-      }
-    };
+    // Note: toggleMode is already defined above using switchToVisualMode/switchToHtmlMode.
 
     const inlineStyle = style ?? {};
 
     const editorStyles: CSSProperties = {
       border: `1px solid ${borderColor}`,
-      borderRadius: '4px',
-      overflow: 'hidden',
-      fontFamily: 'system-ui, -apple-system, sans-serif',
+      borderRadius: "4px",
+      overflow: "hidden",
+      fontFamily: "system-ui, -apple-system, sans-serif",
       ...inlineStyle,
     };
 
     const contentAreaStyles: CSSProperties = {
-      minHeight: '200px',
-      padding: '12px',
+      minHeight: "200px",
+      padding: "12px",
       backgroundColor,
       color: foregroundColor,
-      outline: 'none',
-      overflowY: 'auto',
-      lineHeight: '1.6',
+      outline: "none",
+      overflowY: "auto",
+      lineHeight: "1.6",
     };
 
     const textareaStyles: CSSProperties = {
-      width: '100%',
-      minHeight: '200px',
-      padding: '12px',
+      width: "100%",
+      minHeight: "200px",
+      padding: "12px",
       backgroundColor,
       color: foregroundColor,
-      border: 'none',
-      outline: 'none',
-      fontFamily: 'monospace',
-      fontSize: '14px',
-      resize: 'vertical',
-      lineHeight: '1.6',
+      border: "none",
+      outline: "none",
+      fontFamily: "monospace",
+      fontSize: "14px",
+      resize: "vertical",
+      lineHeight: "1.6",
     };
 
     const toolbarBackground =
-      backgroundColor === '#ffffff'
-        ? '#f5f5f5'
-        : backgroundColor === '#000000'
-        ? '#1a1a1a'
+      backgroundColor === "#ffffff"
+        ? "#f5f5f5"
+        : backgroundColor === "#000000"
+        ? "#1a1a1a"
         : `color-mix(in srgb, ${backgroundColor} 90%, ${
-            foregroundColor === '#000000' ? 'white' : 'black'
+            foregroundColor === "#000000" ? "white" : "black"
           } 10%)`;
 
     const toolbarStyles: CSSProperties = {
-      display: 'flex',
-      gap: '8px',
-      padding: '8px',
+      display: "flex",
+      gap: "8px",
+      padding: "8px",
       backgroundColor: toolbarBackground,
       borderBottom: `1px solid ${borderColor}`,
     };
 
     const buttonStyles: CSSProperties = {
-      padding: '6px 12px',
+      padding: "6px 12px",
       border: `1px solid ${borderColor}`,
-      borderRadius: '3px',
+      borderRadius: "3px",
       backgroundColor,
       color: foregroundColor,
-      cursor: 'pointer',
-      fontSize: '14px',
-      transition: 'all 0.2s',
+      cursor: "pointer",
+      fontSize: "14px",
+      transition: "all 0.2s",
     };
 
     return (
-      <div id={id} className={`inline-editor ${className}`} style={editorStyles}>
+      <div
+        id={id}
+        className={`inline-editor ${className}`}
+        style={editorStyles}
+      >
         <style>
           {`
           .editor-content ul,
@@ -352,7 +338,7 @@ const InlineEditor = forwardRef<InlineEditorHandle, InlineEditorProps>(
         </style>
         {headerSlot
           ? headerSlot({
-              mode: isHtmlMode ? 'html' : 'visual',
+              mode: isHtmlMode ? "html" : "visual",
               toggleMode,
               setMode: setEditorMode,
             } satisfies InlineEditorHeaderSlotProps)
@@ -364,13 +350,13 @@ const InlineEditor = forwardRef<InlineEditorHandle, InlineEditorProps>(
               onClick={toggleMode}
               style={buttonStyles}
               onMouseEnter={(event) => {
-                event.currentTarget.style.opacity = '0.8';
+                event.currentTarget.style.opacity = "0.8";
               }}
               onMouseLeave={(event) => {
-                event.currentTarget.style.opacity = '1';
+                event.currentTarget.style.opacity = "1";
               }}
             >
-              {isHtmlMode ? '📝 Visual' : '< > HTML'}
+              {isHtmlMode ? "📝 Visual" : "< > HTML"}
             </button>
           </div>
         )}
@@ -401,6 +387,6 @@ const InlineEditor = forwardRef<InlineEditorHandle, InlineEditorProps>(
   }
 );
 
-InlineEditor.displayName = 'InlineEditor';
+InlineEditor.displayName = "InlineEditor";
 
 export default InlineEditor;
