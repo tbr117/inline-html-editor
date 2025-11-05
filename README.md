@@ -257,6 +257,55 @@ function MyApp() {
 
       Recommended approach: use the `ref` API for programmatic reads combined with `onBlur` for user-driven saves. This avoids unnecessary React updates during typing in visual mode while still letting you persist reliably.
 
+      ## How to manage multiple editors
+
+      Sometimes an application needs more than one editor instance on the same page (for example: title/editor, summary/body, or side-by-side editors). The practical pattern is to give each editor its own ref and only read content imperatively when needed (submit, preview, or when the user clicks a button). This avoids heavy React updates while typing in visual mode and keeps editors independent.
+
+      Practical tips:
+
+      - Give each editor a descriptive ref name (e.g. `titleEditorRef`, `bodyEditorRef`) so intent is clear in handlers.
+      - Use `onBlur` per-editor to persist when the user finishes editing that specific instance.
+      - Use an explicit action (button or form submit) to read multiple editors at once via their refs — this is simpler and faster than attempting to keep React state in sync on every keystroke.
+      - If you need autosave across multiple editors, debounce a function that reads each editor's `getContent()` and saves together.
+      - Avoid binding the visual editor's content to React state on every input — it causes cursor jumps; instead, use refs or `onBlur` to capture stable content.
+
+      Example (TypeScript) — two editors + a button that reads both contents (based on the sample app):
+
+      ```tsx
+      import { useRef } from 'react';
+      import InlineEditor from './InlineEditor';
+      import type { InlineEditorHandle } from './src/types';
+
+      function MultiEditorExample() {
+        const editorARef = useRef<InlineEditorHandle | null>(null);
+        const editorBRef = useRef<InlineEditorHandle | null>(null);
+
+        const logBoth = () => {
+          const a = editorARef.current?.getContent() ?? '';
+          const b = editorBRef.current?.getContent() ?? '';
+          console.log('Editor A:', a);
+          console.log('Editor B:', b);
+        };
+
+        return (
+          <div>
+            <InlineEditor ref={editorARef} initialContent="<p>First editor</p>" />
+            <InlineEditor ref={editorBRef} initialContent="<p>Second editor</p>" />
+            <button onClick={logBoth}>Log Both Editors</button>
+          </div>
+        );
+      }
+      ```
+
+      When to use this pattern:
+
+      - Form submit: read both editors in the submit handler and send as a single payload.
+      - Preview: read both editors and render the preview from the captured HTML.
+      - Bulk save/autosave: read both editors in a debounced function and save them together to reduce requests.
+
+      Security reminder: always sanitize editor HTML on the server before storing or rendering.
+
+
       ### Example: TypeScript (preferred for apps using forms)
 
       ```tsx

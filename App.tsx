@@ -45,6 +45,8 @@ const App = () => {
     setContent(editorContent);
   };
 
+  
+
   const currentTheme = themes[theme];
 
   const appStyles: CSSProperties = {
@@ -62,13 +64,14 @@ const App = () => {
 
   const headerStyles: CSSProperties = {
     marginBottom: '20px',
-    textAlign: 'center',
+    textAlign: 'left',
   };
 
   const themeButtonsStyles: CSSProperties = {
     display: 'flex',
     gap: '10px',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
     marginBottom: '30px',
     flexWrap: 'wrap',
   };
@@ -101,6 +104,7 @@ const App = () => {
         <h1 style={headerStyles}>Inline Rich Text/HTML Editor</h1>
 
         <div style={themeButtonsStyles}>
+          <span style={{ marginRight: 12 }}>Select a theme to experiment:</span>
           <button
             onClick={() => setTheme('light')}
             style={themeButtonStyle('light')}
@@ -139,6 +143,7 @@ const App = () => {
             // This is where you'd save to your database
           }}
         />
+
         <div style={{ marginTop: '16px', textAlign: 'right' }}>
           <button
             type="button"
