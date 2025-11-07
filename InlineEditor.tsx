@@ -16,6 +16,8 @@ import type {
   InlineEditorMode,
   InlineEditorHeaderSlotProps,
 } from "./src/types";
+import { renderLatex, extractLatex } from "./src/latexRenderer";
+import "katex/dist/katex.min.css";
 
 const DEFAULT_CONTENT = "<p>Start typing here...</p>";
 
@@ -44,7 +46,9 @@ const InlineEditor = forwardRef<InlineEditorHandle, InlineEditorProps>(
 
     useEffect(() => {
       if (!isHtmlMode && editorRef.current) {
-        editorRef.current.innerHTML = htmlSource;
+        // Render LaTeX when displaying in visual mode
+        const renderedHtml = renderLatex(htmlSource);
+        editorRef.current.innerHTML = renderedHtml;
       }
     }, [htmlSource, isHtmlMode]);
 
@@ -55,23 +59,30 @@ const InlineEditor = forwardRef<InlineEditorHandle, InlineEditorProps>(
       }
     }, [initialContent]);
 
-    const getLatestInnerHtml = () =>
-      isHtmlMode
-        ? htmlSource
-        : editorRef.current?.innerHTML ?? lastEmittedContentRef.current;
+    const getLatestInnerHtml = () => {
+      if (isHtmlMode) {
+        return htmlSource;
+      }
+      // Extract LaTeX from rendered content when in visual mode
+      const currentHtml = editorRef.current?.innerHTML ?? lastEmittedContentRef.current;
+      return extractLatex(currentHtml);
+    };
 
     const switchToVisualMode = () => {
       setIsHtmlMode(false);
       setTimeout(() => {
         if (editorRef.current) {
-          editorRef.current.innerHTML = htmlSource;
+          // Render LaTeX when switching to visual mode
+          const renderedHtml = renderLatex(htmlSource);
+          editorRef.current.innerHTML = renderedHtml;
         }
       }, 0);
     };
 
     const switchToHtmlMode = () => {
       if (editorRef.current) {
-        const currentContent = editorRef.current.innerHTML;
+        // Extract rendered LaTeX back to raw format
+        const currentContent = extractLatex(editorRef.current.innerHTML);
         setHtmlSource(currentContent);
         lastEmittedContentRef.current = currentContent;
       }
@@ -119,7 +130,8 @@ const InlineEditor = forwardRef<InlineEditorHandle, InlineEditorProps>(
 
     const handleContentChange = () => {
       if (editorRef.current && !isHtmlMode) {
-        const nextValue = editorRef.current.innerHTML;
+        // Extract LaTeX from rendered content
+        const nextValue = extractLatex(editorRef.current.innerHTML);
         lastEmittedContentRef.current = nextValue;
         if (onChange) {
           onChange(nextValue);
@@ -333,6 +345,17 @@ const InlineEditor = forwardRef<InlineEditorHandle, InlineEditorProps>(
           .editor-content img {
             max-width: 100%;
             height: auto;
+          }
+          .editor-content .math-inline {
+            display: inline;
+            cursor: default;
+          }
+          .editor-content .math-block {
+            display: block;
+            margin: 1em 0;
+            text-align: center;
+            overflow-x: auto;
+            cursor: default;
           }
         `}
         </style>
