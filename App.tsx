@@ -4,7 +4,7 @@ import type { InlineEditorHandle, ThemeName, Theme } from './src/types';
 import { useState, useRef } from 'react';
 
 const INITIAL_CONTENT =
-  "<h2>Welcome to Inline Editor</h2><p>This is a simplified <strong>rich text</strong> editor that supports both visual and HTML editing modes.</p><ul><li>Click the HTML button to view source</li><li>Edit in either mode</li><li>See how it behaves in a theme by clicking one of the modes above</li></ul><p>Have some H<sub>2</sub>O and enjoy...</p>";
+  "<h2>Welcome to Inline Editor with LaTeX Support</h2><p>This is a simplified <strong>rich text</strong> editor that supports both visual and HTML editing modes, plus <strong>mathematical notation</strong>!</p><h3>Math Examples</h3><p>Inline math: The famous equation $E=mc^2$ shows the relationship between energy and mass.</p><p>More inline: The quadratic formula is $x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}$.</p><p>Block math displays centered:</p>$$\\int_0^\\infty e^{-x}dx = 1$$<p>Another block equation:</p>$$\\sum_{n=1}^{\\infty} \\frac{1}{n^2} = \\frac{\\pi^2}{6}$$<h3>Other Features</h3><ul><li>Click the HTML button to view source</li><li>Edit in either mode</li><li>See how it behaves in a theme by clicking one of the modes above</li></ul><p>Have some H<sub>2</sub>O and enjoy...</p>";
 
 const themes: Record<ThemeName, Theme> = {
   light: {
