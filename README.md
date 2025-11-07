@@ -1,12 +1,13 @@
 # Inline HTML Editor
 
-A lightweight, themeable React component for inline HTML editing with visual and code modes. Perfect for applications that need night mode support and simple content editing.
+A lightweight, themeable React component for inline HTML editing with visual and code modes. Perfect for applications that need night mode support and simple content editing. **Now with LaTeX/Math notation support!**
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
 ## Features
 
 - Toggle between visual (WYSIWYG) and HTML source code modes
+- **LaTeX/Math notation support** using KaTeX (inline: `$...$`, block: `$$...$$`)
 - Fully customizable background and foreground colors for dark/light mode
 - Ctrl/Cmd+Click to open links in new tabs while editing
 - Proper rendering of lists, headings, bold, italic, images and more
@@ -24,8 +25,12 @@ A lightweight, themeable React component for inline HTML editing with visual and
 
 ### Using in Your Project
 
-1. Copy `InlineEditor.tsx` to your project's components folder
-2. Import and use it in your React application
+1. Copy `InlineEditor.tsx` and `src/latexRenderer.ts` to your project's components folder
+2. Install required dependencies:
+   ```bash
+   npm install katex @types/katex
+   ```
+3. Import and use it in your React application
 
 ```bash
 # If you want to run the demo
@@ -33,6 +38,77 @@ git clone https://github.com/YOUR_USERNAME/inline-editor.git
 cd inline-editor
 npm install
 npm run dev
+```
+
+## LaTeX/Math Notation Support
+
+The editor now supports rendering mathematical notation using KaTeX, similar to Obsidian's implementation.
+
+### Syntax
+
+- **Inline math**: Wrap expressions with single dollar signs `$...$`
+  - Example: `$E=mc^2$` renders as: *E=mc²*
+  - Example: `$x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}$` renders the quadratic formula
+
+- **Block math**: Wrap expressions with double dollar signs `$$...$$`
+  - Example:
+    ```
+    $$\int_0^\infty e^{-x}dx = 1$$
+    ```
+  - Displays centered on its own line
+
+### Usage Example
+
+```tsx
+import { useState } from 'react';
+import InlineEditor from './components/InlineEditor';
+
+function MyApp(): JSX.Element {
+  const [content, setContent] = useState<string>(
+    '<p>The equation $E=mc^2$ is famous.</p>' +
+    '$$\\sum_{n=1}^{\\infty} \\frac{1}{n^2} = \\frac{\\pi^2}{6}$$'
+  );
+
+  return (
+    <InlineEditor
+      initialContent={content}
+      onChange={(newContent) => setContent(newContent)}
+    />
+  );
+}
+```
+
+### Features
+
+- **Visual mode**: LaTeX expressions are rendered beautifully using KaTeX
+- **HTML mode**: Raw LaTeX code is preserved with `$` delimiters for easy editing
+- **Round-trip editing**: Switch between modes without losing LaTeX formatting
+- **Error handling**: Invalid LaTeX expressions fall back to showing the raw text
+- **Theme support**: Math rendering adapts to light and dark themes
+
+### Common LaTeX Examples
+
+```latex
+# Greek letters
+$\alpha, \beta, \gamma, \Delta, \Omega$
+
+# Fractions
+$\frac{a}{b}$
+
+# Superscripts and subscripts
+$x^2, H_2O$
+
+# Square roots
+$\sqrt{x}, \sqrt[3]{x}$
+
+# Integrals
+$\int_0^\infty f(x)dx$
+
+# Summations
+$\sum_{i=1}^{n} i = \frac{n(n+1)}{2}$
+
+# Matrices
+$$\begin{pmatrix} a & b \\ c & d \end{pmatrix}$$
 ```
 
 ## Usage
@@ -141,6 +217,7 @@ function MyApp(): JSX.Element {
   - Images (responsive, max-width: 100%)
   - Subscript and superscript
   - Inline code and code blocks with monospace font
+  - **LaTeX math expressions** (inline and block)
   - Paragraphs with spacing
 
 ### HTML Mode
@@ -426,6 +503,14 @@ function DocumentEditor(): JSX.Element {
   MIT License - feel free to use this in your projects!
 
   ## Changelog
+
+  ### Version 1.1.0
+
+  - **LaTeX/Math notation support** using KaTeX
+  - Inline math with `$...$` syntax
+  - Block math with `$$...$$` syntax
+  - Seamless mode switching preserves LaTeX formatting
+  - Works with all themes (light, dark, custom colors)
 
   ### Version 1.0.0
 
